@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pace-noge/golang-gin-poc/controllers"
 	"github.com/pace-noge/golang-gin-poc/middlewares"
@@ -38,7 +40,12 @@ func main() {
 	})
 
 	server.POST("/videos", func(ctx *gin.Context) {
-		ctx.JSON(201, videoController.Save(ctx))
+		err := videoController.Save(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else {
+			ctx.JSON(http.StatusCreated, gin.H{"message": "success"})
+		}
 	})
 
 	server.GET("/health-check", func(ctx *gin.Context) {
